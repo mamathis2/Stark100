@@ -16,10 +16,8 @@ data(5:10:55) = 0;
 
 %Determine the bits for the minute tens digit
 data(2) = minute >= 40;
-data(3) = mod(minute,40 >= 20);
-data(4) = mod(minute,20 >= 10);
-disp('Minute');
-disp(data(3));
+data(3) = mod(minute,40) >= 20;
+data(4) = mod(minute,20) >= 10;
 
 %Determine the bits for the minute ones digit
 minuteOnes = mod(minute,10);
