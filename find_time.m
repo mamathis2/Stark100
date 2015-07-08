@@ -15,7 +15,7 @@ yearOnes = dot(ones, data(51:54));
 year = yearTens + yearOnes;
 
 %Determine day
-dayHundreds = dot(hundreds, data(23:34));
+dayHundreds = dot(hundreds, data(23:24));
 dayTens = dot(tens, data(26:29));
 dayOnes = dot(ones, data(31:34));
 day = dayHundreds + dayTens + dayOnes;

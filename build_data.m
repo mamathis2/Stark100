@@ -5,7 +5,7 @@ function [ data, timeinfo ] = build_data( data, timeinfo )
 year = timeinfo(1);
 day = timeinfo(2);
 hour = timeinfo(3);
-minute = timefinfo(4);
+minute = timeinfo(4);
 
 %Markers = 2
 data(1) = 2;
@@ -18,6 +18,8 @@ data(5:10:55) = 0;
 data(2) = minute >= 40;
 data(3) = mod(minute,40 >= 20);
 data(4) = mod(minute,20 >= 10);
+disp('Minute');
+disp(data(3));
 
 %Determine the bits for the minute ones digit
 minuteOnes = mod(minute,10);

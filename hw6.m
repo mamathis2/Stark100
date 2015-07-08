@@ -9,7 +9,7 @@ timeinfo(3) = input('Hour? ');
 timeinfo(4) = input('Minute? ');
 
 %Build Data
-build_data(data, timeinfo);
+[data timeinfo] = build_data(data, timeinfo);
 % [time_info] = find_time(data);
 
 %increment_time(timeinfo);
