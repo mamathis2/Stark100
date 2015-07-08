@@ -1,6 +1,5 @@
 function [ timeInfo ] = find_time( data )
 %find_time  It finds the time
-%   Detailed explanation goes here
 
 %Initialize timeInfo
 timeInfo = zeros(1,4);
