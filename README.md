@@ -1,2 +1,2 @@
-# fuzzyStark
-This is the README file
+# Stark100
+This is a wireless communication project
