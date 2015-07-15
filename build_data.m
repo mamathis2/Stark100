@@ -1,7 +1,8 @@
-function [ data, timeinfo ] = build_data( data, timeinfo )
+function [ data, timeinfo ] = build_data( timeinfo )
 %Takes in year, day (0-364), hour (0-23), minute (0-59)
 %   Returns a maxtix of 60 bits of time data
 
+data = zeros(1,60);
 year = timeinfo(1);
 day = timeinfo(2);
 hour = timeinfo(3);
