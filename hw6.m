@@ -9,12 +9,11 @@ timeinfo(3) = input('Hour? ');
 timeinfo(4) = input('Minute? ');
 
 %Build Data
-[data timeinfo] = build_data(data, timeinfo);
+[data, timeinfo] = build_data(timeinfo);
 % [time_info] = find_time(data);
 
 %increment_time(timeinfo);
 
 %Sine Table
-
-
-
+[sine_data] = sine_table(data);
+    
