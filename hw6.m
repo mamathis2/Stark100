@@ -1,7 +1,7 @@
 clear;
 data = zeros(1,60);
 timeinfo = zeros(1, 4);
-numMinutes = 2;     %Number of minutes of transmission
+numMinutes = 1;     %Number of minutes of transmission, integer >=1
 fc = 40;    %carrier frequency
 samplesPerCycle = 32;
 samplesPerSecond = fc*samplesPerCycle;
@@ -48,9 +48,12 @@ for k = 1:numMinutes
     
     %Plot the concatenated waveforms
     for l = 1:60
-       plot(x + ((l-1) * samplesPerSecond) + ((k-1) * samplesPerMinute),...
+       plot( (x + ((l-1) * samplesPerSecond) + ((k-1) * samplesPerMinute))/samplesPerSecond,...
             sine_data(l,1:samplesPerSecond));
     end
     
     increment_time(timeinfo);
+    
+title('Waveform of time signal')
+xlabel('Seconds')
 end
