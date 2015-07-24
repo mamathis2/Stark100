@@ -10,7 +10,6 @@ sine_data = zeros(60,samplesPerSecond);
 sine_table0 = zeros(1,samplesPerSecond);
 sine_table1 = zeros(1,samplesPerSecond);
 sine_table2 = zeros(1,samplesPerSecond);
-x = 1:samplesPerSecond;
 
 %Create sine tables for each possible bit transmission (0, 1, and 2) that
 %is a second long in duration
@@ -21,6 +20,7 @@ for i = 1:samplesPerCycle*fc
 end
 
 %Plot the bits 0, 1, and 2 on their carrier frequency
+x = linspace(0, 1, samplesPerSecond);
 figure(1)
 plot(x,sine_table0);
 figure(2)

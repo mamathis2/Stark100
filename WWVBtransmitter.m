@@ -11,7 +11,7 @@ sine_data = zeros(1,numSamples);
 sine_table0 = zeros(1,samplesPerSecond);
 sine_table1 = zeros(1,samplesPerSecond);
 sine_table2 = zeros(1,samplesPerSecond);
-x = 1:numSamples;     %Used for plotting
+%x = 1:numSamples;     %Used for plotting
 
 %Get Time Info from user
 timeinfo(1) = input('Year? ');
@@ -25,9 +25,6 @@ for i = 1:samplesPerCycle*fc
     sine_table1(1,i) = sin(2*pi*i/samplesPerCycle) + 6*(i >= samplesPerSecond*0.5) * sin (2*pi*i/samplesPerCycle);
     sine_table2(1,i) = sin(2*pi*i/samplesPerCycle) + 6*(i >= samplesPerSecond*0.8) * sin (2*pi*i/samplesPerCycle);
 end
-
-figure(1)
-hold on
 
 for k = 1:numMinutes
     %Build Data
@@ -49,7 +46,20 @@ for k = 1:numMinutes
     timeinfo = increment_time(timeinfo);
 end
 
+%Save Memory (my cpu slow)
+clear k;
+clear j;
+clear i;
+clear sine_table0;
+clear sine_table1;
+clear sine_table2;
+
+
 %Plot the transmitted signal   
-plot( x/samplesPerSecond,sine_data);
-title('Waveform of time signal')
-xlabel('Seconds')
+%{
+temp comment
+figure(1)
+plot( (1:numSamples)/samplesPerSecond,sine_data );
+title( 'Waveform of time signal' )
+xlabel( 'Seconds' )
+%}

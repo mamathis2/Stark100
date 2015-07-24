@@ -84,7 +84,7 @@ data(54) = mod(yearOnes,2) >= 1;
 data(56:59) = 0;
 
 %Display all of the bits
-disp(data);
+%disp(data);
 
 end
 
