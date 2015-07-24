@@ -65,8 +65,8 @@ end
 testcol = size(test_avgs);
 figure(5)
 plot((1:testcol(2))/samplesPerSecond, 2*test_avgs(1,1:end))
-disp('done');
-
+title('Original digital signal (not cut off)');
+xlabel('Seconds');
 
 
 %This is the code that generates the digital signal no matter what the
@@ -117,6 +117,7 @@ end
 testcol = size(test_avgs_sin);
 figure(9)
 plot((1:testcol(2))/samplesPerSecond, test_avgs_sin(1,1:end))
+title('Average of the received signal multiplied by sine')
 
 %Decode the bit of the signalCos function
 %Also changed numSamples to length(signalCos) again
@@ -131,10 +132,13 @@ end
 testcol = size(test_avgs_cos);
 figure(10)
 plot((1:testcol(2))/samplesPerSecond, test_avgs_cos(1,1:end))
+title('Average of the received signal multiplied by cosine')
 
 %The digital signal is 2 times the magnitude of the average sine and cosine
 %funtions
 finalSignal = 2*sqrt(test_avgs_sin.^2 + test_avgs_cos.^2);
 figure(11)
 plot((1:testcol(2))/samplesPerSecond, finalSignal)
+title('Original digital signal (cut off)');
+xlabel('Seconds');
 disp('done');
