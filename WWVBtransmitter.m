@@ -20,7 +20,7 @@ timeinfo(3) = input('Hour? ');
 timeinfo(4) = input('Minute? ');
 
 %Create sine tables for each possible bit transmission (0, 1, and 2)
-for i = 1:samplesPerCycle*fc
+for i = 1:samplesPerSecond
     sine_table0(1,i) = sin(2*pi*i/samplesPerCycle) + 6*(i >= samplesPerSecond*0.2) * sin (2*pi*i/samplesPerCycle);
     sine_table1(1,i) = sin(2*pi*i/samplesPerCycle) + 6*(i >= samplesPerSecond*0.5) * sin (2*pi*i/samplesPerCycle);
     sine_table2(1,i) = sin(2*pi*i/samplesPerCycle) + 6*(i >= samplesPerSecond*0.8) * sin (2*pi*i/samplesPerCycle);
@@ -56,10 +56,7 @@ clear sine_table2;
 
 
 %Plot the transmitted signal   
-%{
-temp comment
 figure(1)
 plot( (1:numSamples)/samplesPerSecond,sine_data );
 title( 'Waveform of time signal' )
 xlabel( 'Seconds' )
-%}
