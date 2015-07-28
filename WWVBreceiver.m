@@ -48,6 +48,6 @@ end
 finalDigitalSignal = 2*sqrt(avgs_sin.^2 + avgs_cos.^2);
 
 figure(3)
-plot(t/samplesPerSecond, finalDigitalSignal)
+plot(t(newSamplesPerCycle:end)/samplesPerSecond, finalDigitalSignal)
 title('Original digital signal (cut off)');
 xlabel('Seconds');
