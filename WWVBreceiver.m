@@ -77,10 +77,18 @@ end
 
 %Discard an incomplete minute
 %   Find two marker bits in a row (two 2's in a row)
-incompleteMinutePosition = find((diff(extracted_data(1:60)==0) && (extracted_data(1:60)==2))==1);
-extracted_data = extracted_data(incompleteMinutePosition:end);
+twos = data_received(1:61)==2;  
+same = [-1 diff(data_received(1:61))]==0;
+for ind = 1:61
+    if (twos(ind)==1 && same(ind)==1)
+        disp(data_received(ind-2:ind+1));
+        break
+    end
+end
+incompleteMinutePosition = ind;
+data_received= data_received(incompleteMinutePosition:end);
 
 %Call find_time.m on each complete minute
-for startOfSecondPosition = 1:60:size(extracted_data)
-    disp(find_time(extracted_data(startOfSecondPosition:startOfSecondPosition+59)));
+for startOfSecondPosition = 1:60:size(data_received)
+    disp(find_time(data_received(startOfSecondPosition:startOfSecondPosition+59)));
 end
