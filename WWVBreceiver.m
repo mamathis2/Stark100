@@ -76,9 +76,11 @@ end
 %Two marker bits in a row is the start of minute
 
 %Discard an incomplete minute
+%   Find two marker bits in a row (two 2's in a row)
+incompleteMinutePosition = find((diff(extracted_data(1:60)==0) && (extracted_data(1:60)==2))==1);
+extracted_data = extracted_data(incompleteMinutePosition:end);
 
-%Call find_time.m on the subsequent complete minutes
-
-
-
-
+%Call find_time.m on each complete minute
+for startOfSecondPosition = 1:60:size(extracted_data)
+    disp(find_time(extracted_data(startOfSecondPosition:startOfSecondPosition+59)));
+end
