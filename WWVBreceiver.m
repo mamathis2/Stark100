@@ -88,8 +88,6 @@ for i = 1:1280:col
     end
 end
 
-%Create a matrix of bits
-
 %Two marker bits in a row is the start of minute
 
 %Discard an incomplete minute
@@ -98,7 +96,6 @@ twos = data_received(1:61)==2;
 same = [-1 diff(data_received(1:61))]==0;
 for ind = 1:61
     if (twos(ind)==1 && same(ind)==1)
-        disp(data_received(ind-2:ind+1));
         break
     end
 end
@@ -106,6 +103,7 @@ incompleteMinutePosition = ind;
 data_received= data_received(incompleteMinutePosition:end);
 
 %Call find_time.m on each complete minute
-for startOfSecondPosition = 1:60:size(data_received)
+data_received_length = size(data_received);
+for startOfSecondPosition = 1:60:data_received_length(2)
     disp(find_time(data_received(startOfSecondPosition:startOfSecondPosition+59)));
 end
