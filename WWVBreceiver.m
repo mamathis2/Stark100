@@ -69,7 +69,24 @@ else %Last element of posSampsToDelete is position of the end of bit
     finalDigitalSignal = finalDigitalSignal(posSampsToDelete(end)+newSamplesPerCycle-1:end);
 end
 
+[~, col] = size(finalDigitalSignal);
+data_received = zeros(1,round(col/1280));
 %Find indices where the signal goes from 1 to 7 and 7 to 1 (with tolerance)
+for i = 1:1280:col
+    avg2 = sum(finalDigitalSignal(i+samplesPerSecond*.2:i+samplesPerSecond*.5)) / (samplesPerSecond*.3);
+    avg3 = sum(finalDigitalSignal(i+samplesPerSecond*.5:i+samplesPerSecond*.8)) / (samplesPerSecond*.3);
+    avg4 = sum(finalDigitalSignal(i+samplesPerSecond*.8:i+samplesPerSecond-1)) / (samplesPerSecond*.2);
+    avg2 = round((avg2-1) / 6);
+    avg3 = round((avg3-1) / 6);
+    avg4 = round((avg4-1) / 6);
+    if avg2 
+        data_received(((i-1) / 1280)+1) = 0;
+    elseif avg3
+        data_received(((i-1) / 1280)+1) = 1;
+    elseif avg4
+        data_received(((i-1) / 1280)+1) = 2;
+    end
+end
 
 %Create a matrix of bits
 
