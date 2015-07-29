@@ -51,3 +51,34 @@ figure(3)
 plot(t(newSamplesPerCycle:end)/samplesPerSecond, finalDigitalSignal)
 title('Original digital signal (cut off)');
 xlabel('Seconds');
+
+%CONVERT DIGITAL SIGNAL TO BITS
+%   1280 samples is one second
+%   256 samples is 0.2 seconds
+%   640 samples is 0.5 seconds
+%   1024 samples is 0.8 seconds
+
+%Discard incomplete bit
+posSampsToDelete = find(abs(finalDigitalSignal(1:samplesPerSecond)-7.0) < 0.1); %Pos of high signal
+[maxPosDiff, index] = max(diff(posSampsToDelete));
+%In 1280 samples, signal starts high, goes low, goes high again. 
+%Delete the first high signal
+if maxPosDiff > 200 
+    finalDigitalSignal = finalDigitalSignal(posSampsToDelete(index)+newSamplesPerCycle-1 : end);
+else %Last element of posSampsToDelete is position of the end of bit 
+    finalDigitalSignal = finalDigitalSignal(posSampsToDelete(end)+newSamplesPerCycle-1:end);
+end
+
+%Find indices where the signal goes from 1 to 7 and 7 to 1 (with tolerance)
+
+%Create a matrix of bits
+
+%Two marker bits in a row is the start of minute
+
+%Discard an incomplete minute
+
+%Call find_time.m on the subsequent complete minutes
+
+
+
+
