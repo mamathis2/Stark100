@@ -64,9 +64,9 @@ posSampsToDelete = find(abs(finalDigitalSignal(1:samplesPerSecond)-7.0) < 0.1); 
 %In 1280 samples, signal starts high, goes low, goes high again. 
 %Delete the first high signal
 if maxPosDiff > 200 
-    finalDigitalSignal = finalDigitalSignal(posSampsToDelete(index)+newSamplesPerCycle-1 : end);
+    finalDigitalSignal = finalDigitalSignal(posSampsToDelete(index): end);
 else %Last element of posSampsToDelete is position of the end of bit 
-    finalDigitalSignal = finalDigitalSignal(posSampsToDelete(end)+newSamplesPerCycle-1:end);
+    finalDigitalSignal = finalDigitalSignal(posSampsToDelete(end):end);
 end
 
 [~, col] = size(finalDigitalSignal);
