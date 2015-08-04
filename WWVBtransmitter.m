@@ -1,7 +1,7 @@
 clear;
 data = zeros(1,60);
 timeinfo = zeros(1, 4);
-numMinutes = 2;     %Number of minutes of transmission, integer >=1
+numMinutes = 5;     %Number of minutes of transmission, integer >=1
 fc = 40;    %carrier frequency
 samplesPerCycle = 32;
 samplesPerSecond = fc*samplesPerCycle;

@@ -9,7 +9,8 @@ samplesPerMinute = samplesPerSecond*60;
 numSamples = samplesPerMinute*numMinutes;
 
 %Cut off rand num of signals
-signal = sine_data(1,randi([0, samplesPerMinute], 1):end);
+signal = sine_data(1,randi([0, samplesPerMinute-1], 1):end);
+signal = signal + normrnd(0,1);
 [~, col] = size(signal);
 t = 1:col; %Get number of samples
 
@@ -59,7 +60,7 @@ xlabel('Seconds');
 %   1024 samples is 0.8 seconds
 
 %Discard incomplete bit
-posSampsToDelete = find(abs(finalDigitalSignal(1:samplesPerSecond)-7.0) < 0.1); %Pos of high signal
+posSampsToDelete = find(abs(finalDigitalSignal(1:samplesPerSecond)-7.0) < 3.0); %Pos of high signal
 [maxPosDiff, index] = max(diff(posSampsToDelete));
 %In 1280 samples, signal starts high, goes low, goes high again. 
 %Delete the first high signal
@@ -72,10 +73,11 @@ end
 [~, col] = size(finalDigitalSignal);
 data_received = zeros(1,round(col/1280));
 %Find indices where the signal goes from 1 to 7 and 7 to 1 (with tolerance)
+disp(col);
 for i = 1:1280:col
     avg2 = sum(finalDigitalSignal(i+samplesPerSecond*.2:i+samplesPerSecond*.5)) / (samplesPerSecond*.3);
     avg3 = sum(finalDigitalSignal(i+samplesPerSecond*.5:i+samplesPerSecond*.8)) / (samplesPerSecond*.3);
-    avg4 = sum(finalDigitalSignal(i+samplesPerSecond*.8:i+samplesPerSecond-1)) / (samplesPerSecond*.2);
+    avg4 = sum(finalDigitalSignal(i+samplesPerSecond*.8:i+samplesPerSecond-100)) / (samplesPerSecond*.2-100);
     avg2 = round((avg2-1) / 6);
     avg3 = round((avg3-1) / 6);
     avg4 = round((avg4-1) / 6);
