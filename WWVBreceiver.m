@@ -7,7 +7,7 @@ samplesPerCycle = 32;
 samplesPerSecond = fc*samplesPerCycle;
 samplesPerMinute = samplesPerSecond*60;
 numSamples = samplesPerMinute*numMinutes;
-for sigma = 3:.5:10
+for sigma = 1:.5:10
     %Cut off rand num of signals
     signal = sine_data(1,randi([0, samplesPerMinute-1], 1):end);
     [~, col] = size(signal);
@@ -60,24 +60,43 @@ for sigma = 3:.5:10
     %   1024 samples is 0.8 seconds
 
     %Discard incomplete bit
-    posSampsToDelete = find(abs(finalDigitalSignal(1:samplesPerSecond)-7.0) < 3.0); %Pos of high signal
-    [maxPosDiff, index] = max(diff(posSampsToDelete));
     %In 1280 samples, signal starts high, goes low, goes high again. 
     %Delete the first high signal
-    if maxPosDiff > 200 
-        finalDigitalSignal = finalDigitalSignal(posSampsToDelete(index): end);
-    else %Last element of posSampsToDelete is position of the end of bit 
-        finalDigitalSignal = finalDigitalSignal(posSampsToDelete(end):end);
+    incompleteSecondHigh = 0;
+    for t = newSamplesPerCycle:1280
+        avg = mean(finalDigitalSignal(t-15:t));
+
+        %If the previous samples were 1, and the current sample is 7
+        if incompleteSecondHigh==0 && avg>3.5
+            incompleteSecondHigh = 1;
+        end
+
+        %If previous samples were 7s of cut off bit, and the next bit starts
+        %Delete the cut off bit
+        if incompleteSecondHigh==1 && avg<3.5
+            finalDigitalSignal = finalDigitalSignal(t:end);
+            break
+        end
     end
 
     [~, col] = size(finalDigitalSignal);
     data_received = zeros(1,round(col/1280));
+    col = 1280*round(col/1280);
+    
     %Find indices where the signal goes from 1 to 7 and 7 to 1 (with tolerance)
-    disp(col);
     for i = 1:1280:col
-        avg2 = sum(finalDigitalSignal(i+samplesPerSecond*.2:i+samplesPerSecond*.5)) / (samplesPerSecond*.3);
-        avg3 = sum(finalDigitalSignal(i+samplesPerSecond*.5:i+samplesPerSecond*.8)) / (samplesPerSecond*.3);
-        avg4 = sum(finalDigitalSignal(i+samplesPerSecond*.8:i+samplesPerSecond-100)) / (samplesPerSecond*.2-100);
+        try
+            avg2 = sum(finalDigitalSignal(i+samplesPerSecond*.2:i+samplesPerSecond*.5)) / (samplesPerSecond*.3);
+            avg3 = sum(finalDigitalSignal(i+samplesPerSecond*.5:i+samplesPerSecond*.8)) / (samplesPerSecond*.3);
+            avg4 = sum(finalDigitalSignal(i+samplesPerSecond*.8:i+samplesPerSecond-100)) / (samplesPerSecond*.2-100);
+        catch IE
+            %disp(IE);
+            %disp(i);
+            %disp(i+samplesPerSecond);
+            %disp(i+samplesPerSecond-100);
+            error(IE.message)
+        end
+        
         avg2 = round((avg2-1) / 6);
         avg3 = round((avg3-1) / 6);
         avg4 = round((avg4-1) / 6);
@@ -91,7 +110,6 @@ for sigma = 3:.5:10
     end
 
     %Two marker bits in a row is the start of minute
-
     %Discard an incomplete minute
     %   Find two marker bits in a row (two 2's in a row)
     twos = data_received(1:61)==2;  
