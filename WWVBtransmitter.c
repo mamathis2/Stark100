@@ -1,11 +1,11 @@
-#include <stdio.h>;
-#include <stdint.h>;
-#include <stdlib.h>;
-#include <math.h>;
-#include <time.h>;
+#include <stdio.h>
+#include <stdint.h>
+#include <stdlib.h>
+#include <math.h>
+#include <time.h>
 
 
-int numMinutes = 5;
+int numMinutes = 1;
 int data[60];
 int timeinfo[4];
 int fc = 40;
@@ -18,10 +18,10 @@ int i, j, k;
 float pi = 3.141592654;
 
 void build_data(int *data, int *timeinfo) {
-	int year = timeinfo[1];
-	int day = timeinfo[2];
-	int hour = timeinfo[3];
-	int minute = timeinfo[4];
+	int year = timeinfo[0];
+	int day = timeinfo[1];
+	int hour = timeinfo[2];
+	int minute = timeinfo[3];
 
 	//Markers
 	data[0] = 2;
@@ -47,13 +47,12 @@ void build_data(int *data, int *timeinfo) {
 		} 
 	}
 
-
 	//Determine the bits for the minute tens digit
 	data[1] = minute >= 40;
 	data[2] = (minute % 40) >= 20;
 	data[3] = (minute % 20) >= 10;
 
-	//Determine the bits fo the minute ones digit
+	//Determine the bits of the minute ones digit
 	int minuteOnes = minute % 10;
 	data[5] = minuteOnes >= 8;
 	data[6] = (minuteOnes % 8) >= 4;
@@ -104,9 +103,9 @@ void build_data(int *data, int *timeinfo) {
 	data[53] = (yearOnes % 2) >= 1;
 	
 	//Display data
-	/*for(i = 0; i < 60; i = i+5) {
-		printf("%d	%d	%d	%d	%d", data[i], data[i+1], data[i+2], data[i+3], data[i+4]);
-	}*/
+	for(int i = 0; i < 60; i = i+10) {
+		printf("%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\n", data[i], data[i+1], data[i+2], data[i+3], data[i+4], data[i+5], data[i+6], data[i+7], data[i+8], data[i+9]);
+	}
 	
 }
 void increment_time(int *timeinfo);
@@ -114,22 +113,22 @@ int main () {
 
     printf("Enter the year: ");
     scanf("%d", &year);
-    printf("You entered %d /n", year);
+    printf("You entered %d \n", year);
     timeinfo[0] = year;
 
     printf("Enter the day: ");
     scanf("%d", &day);
-    printf("You entered %d /n", day);
+    printf("You entered %d \n", day);
     timeinfo[1] = day;
 
-    printf("Enter the year: ");
+    printf("Enter the hour: ");
     scanf("%d", &hour);
-    printf("You entered %d /n", hour);
+    printf("You entered %d \n", hour);
     timeinfo[2] = hour;
 
-    printf("Enter the year: ");
+    printf("Enter the minute: ");
     scanf("%d", &minute);
-    printf("You entered %d /n", minute);
+    printf("You entered %d \n", minute);
     timeinfo[3] = minute;
 
     for (k = 0; k < numMinutes; k += 1) {
