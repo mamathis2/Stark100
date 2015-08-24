@@ -2,111 +2,140 @@
 //   Input is sine_data of a random starting point
 //   Output is a digital signal
 #include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
 
 const int fc = 40;    //carrier frequency
 const int samplesPerCycle = 32;
 const int samplesPerSecond = fc*samplesPerCycle;
 const int samplesPerMinute = samplesPerSecond*60;
+const int numMinutes = 1;
 const int numSamples = samplesPerMinute*numMinutes;
 
-//Cut off rand num of signals
-signal = sine_data(1,randi([0, samplesPerMinute-1], 1):end);
-signal = signal + normrnd(0,1);
-[~, col] = size(signal);
-t = 1:col; %Get number of samples
 
-figure(2)
-plot(t/samplesPerSecond,signal)
-title('Received time signal (cut off)')
-xlabel('Seconds')
+void find_time(int *data, int *timeinfo) {
+	//Given the received data, this finds the year, day, hour and minute
+	
+	//Determine the year
+	int yearTens = 80*data[45] + 40*data[46] + 20*data[47] + 10*data[48];
+	int yearOnes = 8*data[50] + 4*data[51] + 2*data[52] + data[53];
+	int year = yearTens + yearOnes;
+	
+	//Determine the day
+	int dayHundreds = 200*data[22] + 100*data[23];
+	int dayTens = 80*data[25] + 40*data[26] + 20*data[27] + 10*data[28];
+	int dayOnes = 8*data[30] + 4*data[31] + 2*data[32] + data[33];
+	int day = dayHundreds + dayTens + dayOnes;
+	
+	//Determine the hour
+	int hourTens = 80*data[10] + 40*data[11] + 20*data[12] + 10*data[13];
+	int hourOnes = 8*data[15] + 4*data[16] + 2*data[17] + data[18];
+	int hour = hourTens + hourOnes;
+	
+	//Determine the minute
+	int minuteTens = 40*data[1] + 20*data[2] + 10*data[3];
+	int minuteOnes = 8*data[5] + 4*data[6] + 2*data[7] + data[8];
+	int minute = minuteTens + minuteOnes;
+	
+	timeinfo[0] = year;
+	timeinfo[1] = day;
+	timeinfo[2] = hour;
+	timeinfo[3] = minute;
+}	
 
-//Input waveform is in the form of sin(2*pi*fc*t + phi)
-//Multiply waveform by sin(2*pi*fc*t) and cos(2*pi*fc*t)
-signalCos = signal .* cos(2*pi*fc * t/samplesPerSecond);
-signalSin = signal .* sin(2*pi*fc * t/samplesPerSecond);
 
-//DECODE DATA
-//One bit = one second = 40*16 samples (fc*samplesPerCycle/2) (double freq
-//term)
 
-newSamplesPerCycle = 16;
+int main(int argc, char *argv[]){
+    //First argument is name of program
+    //Second argument is file name with data (sine data)
+    
+    char* filename = argv[1];
+    //TODO get data
+    
+    int16_t sine_data;
+    double signalCos[sine_data.length];
+    double signalSin[sine_data.length];
+    
+    for (int i = 0; i<sine_data.length()-1; i++){
+        signalCos[i] = sine_data[i] * cos(2*pi*fc * t/samplesPerSecond);
+    }
+    for (int i = 0; i<sine_data.length()-1; i++){
+        signalSin[i] = sine_data[i] * sin(2*pi*fc * t/samplesPerSecond);
+    }
+    
+    double avgs_sin[signalSin.length-16];
+    for (int i = 0; i<signalSin.length-16-1;i++){
+        //Averages last 16 samples from signal * sin and stores them in array
+        double sum = 0;
+        for (int j = 0; j<16; j++){
+            sum = sum + signalSin[i+j];
+        }
+        avgs_sin[i] = sum / 16.0;
+    }
+    
+    double avgs_cos[signalCos.length-16];
+    for (int i = 0; i<signalCos.length-16-1;i++){
+        //Averages last 16 samples from signal * sin and stores them in array
+        double sum = 0;
+        for (int j = 0; j<16; j++){
+            sum = sum + signalCos[i+j];
+        }
+        avgs_cos[i] = sum / 16.0;
+    }
+    
+    double finalDigitalSignal[signalCos.length];
+    for (int i = 0; i<signalCos.length;i++){
+        finalDigitalSignal = 2.0*sqrt( (avgs_sin[i]*avgs_sin[i]) + (avgs_cos[i]*avgs_cos[i]) );
+    }
+    
+    int data_received[60];
+    for (int i = 0; i<numMinutes; i=i+fc*samplesPerCycle){
+        
+        double sum1 = 0;
+        double sum2 = 0;
+        double sum3 = 0;
+        double sum4 = 0;
+        
+        for (int j1 = 0; j1<fc*samplesPerCycle*0.2; j1++){
+            sum1 = sum1 + finalDigitalSignal[i+j1]/(fc*samplesPerCycle*0.2);
+        }
+        for (int j2 = fc*samplesPerCycle*0.2; j2<fc*samplesPerCycle*0.5; j2++){
+            sum2 = sum2 + finalDigitalSignal[i+j2]/(fc*samplesPerCycle*(0.5-0.2));
+        }
+        for (int j3 = fc*samplesPerCycle*0.5; j3<fc*samplesPerCycle*0.8; j3++){
+            sum3 = sum3 + finalDigitalSignal[i+j3]/(fc*samplesPerCycle*(0.8-0.5));
+        }
+        for (int j4 = fc*samplesPerCycle*0.8; j4<fc*samplesPerCycle*1.0; j4++){
+            sum4 = sum4 + finalDigitalSignal[i+j4]/(fc*samplesPerCycle*(1.0-0.8));
+        }
+        
+        if (sum2 > 3.5 && sum3 > 3.5 && sum4 > 3.5){
+            data_received[ i/fc*samplesPerCycle ] = 0;
+        }
+        else if (sum3 > 3.5 && sum4 > 3.5){
+            data_received[ i/fc*samplesPerCycle ] = 1;
+        }
+        else if (sum4 > 3.5){
+            data_received[ i/fc*samplesPerCycle ] = 2;
+        }
+        else{
+            //Error
+            data_received[ i/fc*samplesPerCycle ] = -1;
+        }
+    }
+    
+    //Call find_time.m on each complete minute
+    for( int i = 0; i < data_received.length; i = i + 60 ){
+        int data_minute[60];
+        int timeinfo[4];
+        for (int j = 0; j<60; j++){
+            data_minute[j] = data_received[i+j];
+        }
+        find_time(data_minute, timeinfo);
+        printf("%d, %d, %d, %d", timeinfo[0], timeinfo[1], timeinfo[2], timeinfo[3]);
+    }
+    
+}
 
-//Decode the signalSin function
-avgs_sin = zeros(1, length(signalSin)-newSamplesPerCycle+1);
-for i = newSamplesPerCycle:length(signalSin)
-    %Averages last 16 samples from signal * sin and stores them in array
-    avgs_sin(i-newSamplesPerCycle+1) = sum( signalSin(i-newSamplesPerCycle+1:i) ) / newSamplesPerCycle;   
-end
 
-//Decode the signalCos function
-avgs_cos = zeros(1, length(signalCos)-newSamplesPerCycle+1);
-for i = newSamplesPerCycle:length(signalCos)
-    %Averages last 16 samples from signal * cos and stores them in array
-    avgs_cos(i-newSamplesPerCycle+1) = sum( signalCos( i-newSamplesPerCycle+1: i ) ) / newSamplesPerCycle;    
-end
 
-//The digital signal is 2 times the magnitude of the average sine and cosine
-//funtions
-finalDigitalSignal = 2*sqrt(avgs_sin.^2 + avgs_cos.^2);
-
-figure(3)
-plot(t(newSamplesPerCycle:end)/samplesPerSecond, finalDigitalSignal)
-title('Original digital signal (cut off)');
-xlabel('Seconds');
-
-//CONVERT DIGITAL SIGNAL TO BITS
-//   1280 samples is one second
-//   256 samples is 0.2 seconds
-//   640 samples is 0.5 seconds
-//   1024 samples is 0.8 seconds
-
-//Discard incomplete bit
-posSampsToDelete = find(abs(finalDigitalSignal(1:samplesPerSecond)-7.0) < 3.0); %Pos of high signal
-[maxPosDiff, index] = max(diff(posSampsToDelete));
-//In 1280 samples, signal starts high, goes low, goes high again. 
-//Delete the first high signal
-if maxPosDiff > 200 
-    finalDigitalSignal = finalDigitalSignal(posSampsToDelete(index): end);
-else %Last element of posSampsToDelete is position of the end of bit 
-    finalDigitalSignal = finalDigitalSignal(posSampsToDelete(end):end);
-end
-
-[~, col] = size(finalDigitalSignal);
-data_received = zeros(1,round(col/1280));
-//Find indices where the signal goes from 1 to 7 and 7 to 1 (with tolerance)
-disp(col);
-for i = 1:1280:col
-    avg2 = sum(finalDigitalSignal(i+samplesPerSecond*.2:i+samplesPerSecond*.5)) / (samplesPerSecond*.3);
-    avg3 = sum(finalDigitalSignal(i+samplesPerSecond*.5:i+samplesPerSecond*.8)) / (samplesPerSecond*.3);
-    avg4 = sum(finalDigitalSignal(i+samplesPerSecond*.8:i+samplesPerSecond-100)) / (samplesPerSecond*.2-100);
-    avg2 = round((avg2-1) / 6);
-    avg3 = round((avg3-1) / 6);
-    avg4 = round((avg4-1) / 6);
-    if avg2 
-        data_received(((i-1) / 1280)+1) = 0;
-    elseif avg3
-        data_received(((i-1) / 1280)+1) = 1;
-    elseif avg4
-        data_received(((i-1) / 1280)+1) = 2;
-    end
-end
-
-//Two marker bits in a row is the start of minute
-
-//Discard an incomplete minute
-//   Find two marker bits in a row (two 2's in a row)
-twos = data_received(1:61)==2;  
-same = [-1 diff(data_received(1:61))]==0;
-for ind = 1:61
-    if (twos(ind)==1 && same(ind)==1)
-        break
-    end
-end
-incompleteMinutePosition = ind;
-data_received= data_received(incompleteMinutePosition:end);
-
-//Call find_time.m on each complete minute
-data_received_length = size(data_received);
-for startOfSecondPosition = 1:60:data_received_length(2)
-    disp(find_time(data_received(startOfSecondPosition:startOfSecondPosition+59)));
-end

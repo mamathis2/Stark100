@@ -4,6 +4,8 @@
 #include <math.h>;
 #include <time.h>;
 
+#define N 32
+int16_t sine_table[N];
 
 int numMinutes = 5;
 int data[60];
@@ -163,5 +165,6 @@ int main (void) {
             }   //Ends cyclesPerSecond
         }   //Ends seconds
         increment_time(timeinfo);
-    }   
+    }
+    
 }
